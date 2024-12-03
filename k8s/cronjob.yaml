@@ -20,5 +20,5 @@ spec:
           restartPolicy: OnFailure
           volumes:
           - name: frame-storage
-          persistentVolumeClaim:
-            claimName: fogcat5-frames
+            persistentVolumeClaim:
+              claimName: fogcat5-frames
