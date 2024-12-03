@@ -1,0 +1,23 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: frame-fetcher
+spec:
+  schedule: "0 * * * *" # Cron schedule for hourly execution
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: frame-fetcher
+            image: fogcat5/frame-fetcher:latest
+            env:
+            - name: YOUTUBE_URL
+              value: "https://www.youtube.com/watch?v=hXtYKDio1rQ"
+            volumeMounts:
+            - name: frame-storage
+              mountPath: /frames
+          restartPolicy: OnFailure
+          volumes:
+          - name: frame-storage
+            emptyDir: {} # Temporary storage for frames

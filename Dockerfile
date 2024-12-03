@@ -14,7 +14,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 RUN apt-get update && apt-get install -y ffmpeg && apt-get clean
 
 # Default environment variable
-# rio sands live cam
+# rio sands webcam
 ENV YOUTUBE_URL="https://www.youtube.com/watch?v=hXtYKDio1rQ"
 
 # Run the script

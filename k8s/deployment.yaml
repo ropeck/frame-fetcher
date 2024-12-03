@@ -17,7 +17,7 @@ spec:
         image: frame-fetcher:latest
         env:
         - name: YOUTUBE_URL
-          value: "https://www.youtube.com/watch?v=YOUR_LIVE_STREAM_ID"
+          value: "https://www.youtube.com/watch?v=hXtYKDio1rQ"
         volumeMounts:
         - mountPath: /frames
           name: frame-storage
