@@ -6,6 +6,9 @@ spec:
   containers:
   - name: debugger
     image: ubuntu:latest
+    env:
+    - name: TZ
+      value: "America/Los_Angeles"
     command: ["/bin/sh", "-c", "sleep infinity"] # Keep the pod running
     volumeMounts:
     - name: frame-storage
