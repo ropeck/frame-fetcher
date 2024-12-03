@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: frame-fetcher
-        image: frame-fetcher:latest
+        image: fogcat5/frame-fetcher:latest
         env:
         - name: YOUTUBE_URL
           value: "https://www.youtube.com/watch?v=hXtYKDio1rQ"
@@ -23,4 +23,5 @@ spec:
           name: frame-storage
       volumes:
       - name: frame-storage
-        emptyDir: {}
+        persistentVolumeClaim:
+          claimName: fogcat5-frames
