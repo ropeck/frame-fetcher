@@ -20,4 +20,5 @@ spec:
           restartPolicy: OnFailure
           volumes:
           - name: frame-storage
-            emptyDir: {} # Temporary storage for frames
+          persistentVolumeClaim:
+            claimName: fogcat5-frames
