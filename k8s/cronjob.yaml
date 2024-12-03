@@ -12,6 +12,8 @@ spec:
           - name: frame-fetcher
             image: fogcat5/frame-fetcher:latest
             env:
+            - name: TZ
+              value: "America/Los_Angeles"
             - name: YOUTUBE_URL
               value: "https://www.youtube.com/watch?v=hXtYKDio1rQ"
             volumeMounts:
