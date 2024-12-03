@@ -42,8 +42,10 @@ def fetch_frame_from_live_stream(youtube_url, output_dir="/frames"):
     try:
         subprocess.run(ffmpeg_command, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         print(f"Frame saved to {output_file}")
+        exit(0)
     except subprocess.CalledProcessError as e:
         print(f"Error occurred while fetching frame: {e.stderr.decode()}")
+        exit(1)
 
 if __name__ == "__main__":
     youtube_live_url = os.getenv("YOUTUBE_URL", "https://www.youtube.com/watch?v=YOUR_LIVE_STREAM_ID")
