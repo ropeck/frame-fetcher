@@ -11,6 +11,8 @@ spec:
           containers:
           - name: frame-fetcher
             image: fogcat5/frame-fetcher:latest
+            imagePullPolicy: Always
+            args: ["python3", "/app/app.py"]
             env:
             - name: TZ
               value: "America/Los_Angeles"
