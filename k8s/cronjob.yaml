@@ -10,7 +10,7 @@ spec:
         spec:
           containers:
           - name: frame-fetcher
-            image: fogcat5/frame-fetcher:0.1.2
+            image: fogcat5/frame-fetcher:0.1.3
             args: ["bash", "/app/endpoint.sh"]
             env:
             - name: TZ
@@ -29,7 +29,7 @@ spec:
           volumes:
           - name: frame-storage
             persistentVolumeClaim:
-              claimName: fogcat5-
+              claimName: fogcat5-frames
           - name: gcp-credentials
             secret:
               secretName: gcp-credentials
