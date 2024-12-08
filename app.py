@@ -13,11 +13,21 @@ def get_live_stream_url(youtube_url):
     except Exception as e:
         raise RuntimeError(f"Failed to fetch live stream URL: {e}")
 
-def fetch_frame_from_live_stream(youtube_url, output_dir="/frames"):
-    # Fetch a single frame from the live stream and save it as a JPEG.
+def fetch_frame_from_live_stream(youtube_url, output_dir=None):
+    """
+     Fetch a single frame from the live stream and save it as a JPEG.
 
-    # Create output directory if it doesn't exist
+    :param youtube_url: youtube video url to sample and save to output_dir
+    :param output_dir: defaults to /frames/YYYY/MM/DD
+    """
+
+    timestamp = datetime.now()
+    file_name = f"{timestamp:%Y-%m-%d-%H-%M-%S}.jpeg"
+    if output_dir is None:
+        output_dir = "/frames"
+        output_dir = f"/frames/{timestamp:%Y}/{timestamp:%m}/{timestamp:%d}"
     os.makedirs(output_dir, exist_ok=True)
+    output_file = os.path.join(output_dir, file_name)
 
     # Get the live stream URL
     try:
@@ -25,10 +35,6 @@ def fetch_frame_from_live_stream(youtube_url, output_dir="/frames"):
     except RuntimeError as e:
         print(f"Error fetching live stream URL: {e}")
         return
-
-    # Get current timestamp for unique filename
-    timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-    output_file = os.path.join(output_dir, f"frame_{timestamp}.jpeg")
 
     # Use ffmpeg to fetch a single frame
     ffmpeg_command = [
