@@ -18,12 +18,12 @@ def get_live_stream_url(youtube_url):
 
 class TimelapseRecorder:
     def __init__(self, output_dir=None):
-        self.output_dir = output_dir
+        self.output_dir_prefix = output_dir
 
-    def output_dir(self, t):
+    def output_dir(self, t=None):
         if t is None:
             t = datetime.now()
-        return f"/{self.output_dir}/{t:%Y}/{t:%m}/{t:%d}"
+        return f"{self.output_dir_prefix}/{t:%Y}/{t:%m}/{t:%d}"
     def make_output_dir(self, timestamp=None):
         os.makedirs(self.output_dir(timestamp), exist_ok=True)
     def output_path(self, timestamp=None):
@@ -37,14 +37,14 @@ class TimelapseRecorder:
         thumb_dir = os.path.join(dir, "thumbnails")
         os.makedirs(thumb_dir, exist_ok=True)
         img = Image.open(image_path)
-        img.thumbnail((200, 200), Image.ANTIALIAS)
+        img.thumbnail((200, 200), Image.Resampling.LANCZOS)
         base_name = os.path.basename(image_path)
         thumbnail_path = os.path.join(thumb_dir, base_name)
         img.save(thumbnail_path, "JPEG")
         print(f"Thumbnail saved to {thumbnail_path}")
         return thumbnail_path
 
-    def fetch_frame_from_live_stream(youtube_url):
+    def fetch_frame_from_live_stream(self, youtube_url):
         """
          Fetch a single frame from the live stream and save it as a JPEG.
 
