@@ -10,8 +10,7 @@ spec:
         spec:
           containers:
           - name: frame-fetcher
-            image: fogcat5/frame-fetcher:latest
-            imagePullPolicy: Always
+            image: fogcat5/frame-fetcher:0.1
             args: ["python3", "/app/app.py"]
             env:
             - name: TZ
