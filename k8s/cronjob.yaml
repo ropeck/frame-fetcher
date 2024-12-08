@@ -21,7 +21,7 @@ spec:
               value: "/app/service-account-key.json"
             volumeMounts:
             - name: frame-storage
-              mountPath: /
+              mountPath: /frames
             - name: gcp-credentials
               mountPath: /app/service-account-key.json
               subPath: service-account-key.json
