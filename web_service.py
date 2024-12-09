@@ -54,6 +54,8 @@ def serve_gif(year, month, day):
         return jsonify({"error": "GIF not found"}), 404
     return send_file(gif_path, mimetype="image/gif")
 
-
+@app.route('/healthz')
+def healthz():
+    return jsonify({"status": "ok"}), 200
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)

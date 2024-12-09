@@ -18,6 +18,25 @@ spec:
         args: ["gunicorn", "-b", "0.0.0.0:5000", "web_service:app"]
         ports:
         - containerPort: 5000
+        readinessProbe:
+          httpGet:
+            path: /healthz  # The endpoint your app exposes for health checks
+            port: 5000
+          initialDelaySeconds: 5  # Wait 5 seconds after the container starts before checking
+          periodSeconds: 10       # Check every 10 seconds
+        livenessProbe:
+          httpGet:
+            path: /healthz  # The endpoint your app exposes for liveness checks
+            port: 5000
+          initialDelaySeconds: 10  # Wait 10 seconds after the container starts before the first check
+          periodSeconds: 30        # Check every 30 seconds
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "250m"
+          limits:
+            memory: "256Mi"
+            cpu: "500m"
         volumeMounts:
         - name: frames-pvc
           mountPath: /frames
