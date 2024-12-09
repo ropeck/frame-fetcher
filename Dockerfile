@@ -23,7 +23,7 @@ ENV PATH=$PATH:/usr/local/gcloud/google-cloud-sdk/bin
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Copy Python script and requirements
-COPY app.py requirements.txt endpoint.sh ./
+COPY *.py requirements.txt endpoint.sh ./
 
 # Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt

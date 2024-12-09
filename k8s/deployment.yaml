@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: timelapse-web
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: timelapse-web
+  template:
+    metadata:
+      labels:
+        app: timelapse-web
+    spec:
+      containers:
+      - name: timelapse-web
+        image: fogcat5/frame-fetcher:latest
+        args: ["web_service.py"]
+        ports:
+        - containerPort: 5000
+        volumeMounts:
+        - name: frames-pvc
+          mountPath: /frames
+      volumes:
+      - name: frames-pvc
+        persistentVolumeClaim:
+          claimName: fogcat5-frames

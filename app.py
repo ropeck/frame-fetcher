@@ -1,3 +1,4 @@
+import glob
 import logging
 import os
 import subprocess
@@ -117,10 +118,44 @@ class TimelapseRecorder:
         self.run_command(["gsutil", "-m", "rsync", "-r", "/frames/", gcs])
         logging.info("Synced /frames/ to %s", gcs)
 
+    def create_animated_gif(self, timestamp=None, framerate=2):
+        """
+        Create an animated GIF from the day's frames.
+
+        Args:
+            framerate (int): Frames per second for the GIF.
+        """
+        # Get the directory for today's frames or given time
+        if timestamp is None:
+            timestamp = datetime.now()
+        frame_dir = os.path.join(self.output_dir_prefix, f"{timestamp:%Y/%m/%d}")
+        gif_path = os.path.join(frame_dir, f"{timestamp:%Y-%m-%d}.gif")
+
+        # List all JPEG files for the day
+        frame_paths = sorted(glob.glob(f"{frame_dir}/*.jpeg"))
+        if not frame_paths:
+            print(f"No frames found in {frame_dir}. Skipping GIF generation.")
+            return
+
+        # Load images and convert to RGB
+        images = [Image.open(frame).convert("RGB") for frame in frame_paths]
+
+        # Save as animated GIF
+        images[0].save(
+            gif_path,
+            save_all=True,
+            append_images=images[1:],
+            duration=1000 // framerate,  # Duration per frame in milliseconds
+            loop=0
+        )
+        logging.info("Animated GIF saved to %s", gif_path)
+        return gif_path
+
     def execute(self):
         frame = self.fetch_frame_from_live_stream()
         self.generate_thumbnail(frame)
         self.create_day_timelapse()
+        self.create_animated_gif()
         self.sync_cloud()
         frames_processed.inc()
 
