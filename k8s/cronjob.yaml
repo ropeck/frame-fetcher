@@ -10,7 +10,7 @@ spec:
         spec:
           containers:
           - name: frame-fetcher
-            image: fogcat5/frame-fetcher:latest
+            image: fogcat5/frame-fetcher:0.1.10
             args: ["bash", "/app/endpoint.sh"]
             env:
             - name: TZ
