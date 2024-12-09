@@ -1,9 +1,14 @@
+import logging
 import os
 import subprocess
+import sys
 from datetime import datetime
 from yt_dlp import YoutubeDL
 from PIL import Image
 
+logging.basicConfig(level=logging.INFO,
+                    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+                    handlers=[logging.StreamHandler()])
 
 class TimelapseRecorder:
     def __init__(self, output_dir=None, youtube_url=None):
@@ -33,7 +38,7 @@ class TimelapseRecorder:
         base_name = os.path.basename(image_path)
         thumbnail_path = os.path.join(thumb_dir, base_name)
         img.save(thumbnail_path, "JPEG")
-        print(f"Thumbnail saved to {thumbnail_path}")
+        logging.info("Thumbnail saved to %s", thumbnail_path)
         return thumbnail_path
 
     def get_live_stream_url(self):
@@ -46,6 +51,25 @@ class TimelapseRecorder:
         except Exception as e:
             raise RuntimeError(f"Failed to fetch live stream URL: {e}")
 
+    def run_command(self, command):
+        logging.debug("command: %s", " ".join(command))
+        try:
+            subprocess.run(command, check=True)
+        except subprocess.CalledProcessError as e:
+            print(f"Command failed with return code {e.returncode}")
+            print(f"Command output: {e.output}")
+            print(f"Error output: {e.stderr}")
+            # exit(e.returncode)
+
+    def ffmpeg(self, args, output_path):
+        cmd = ["ffmpeg"]
+        cmd.extend(args)
+        cmd.extend([
+            "-loglevel", "error",       # less output messages
+            "-hide_banner"])            # no info banner on start
+        cmd.append(output_path)
+        self.run_command(cmd)
+
     def fetch_frame_from_live_stream(self):
         """
          Fetch a single frame from the live stream and save it as a JPEG.
@@ -55,16 +79,13 @@ class TimelapseRecorder:
         self.make_output_dir()
 
         # Use ffmpeg to fetch a single frame
-        ffmpeg_command = [
-            "ffmpeg",
-            "-i", self.get_live_stream_url(),  # Input live stream URL
-            "-frames:v", "1",       # Extract only one frame
-            "-q:v", "2",            # Quality level
-            output_file             # Output image file
-        ]
+        self.ffmpeg([
+            "-i", self.get_live_stream_url(),   # Input live stream URL
+            "-frames:v", "1",                   # Extract only one frame
+            "-q:v", "2"],                       # Quality level
+            output_file)                        # Output image file
 
-        subprocess.run(ffmpeg_command, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        print(f"Frame saved to {output_file}")
+        logging.info("Frame saved to %s", output_file)
         return output_file
 
     def create_day_timelapse(self):
@@ -73,17 +94,14 @@ class TimelapseRecorder:
                                       f"{now:%Y-%m-%d}.mp4")
         if os.path.exists(timelapse_path):
             os.remove(timelapse_path)
-        ffmpeg_command = [
-            "ffmpeg",
+        self.ffmpeg([
             "-framerate", "24",
             "-pattern_type", "glob",
             "-i", f"{self.output_dir()}/*.jpeg",
             "-c:v", "libx264",
-            "-pix_fmt", "yuv420p",
-            timelapse_path
-        ]
-        subprocess.run(ffmpeg_command, check=True)
-        print(f"Timelapse saved to {timelapse_path}")
+            "-pix_fmt", "yuvj420p"],
+            timelapse_path)
+        logging.info("Timelapse saved to %s", timelapse_path)
 
     def sync_cloud(self):
         """
@@ -91,13 +109,8 @@ class TimelapseRecorder:
         :return:
         """
         gcs = "gs://fogcat-webcam/frames"
-        result = subprocess.run(["gsutil", "-m", "rsync", "-r",
-                                 "/frames/", gcs],
-                                 capture_output=True)
-        if result.returncode == 0:
-            print(f"Synced /frames/ to {gcs}")
-        else:
-            print(f"Failed to sync: {result.stderr.decode()}")
+        self.run_command(["gsutil", "-m", "rsync", "-r", "/frames/", gcs])
+        logging.info("Synced /frames/ to %s", gcs)
 
     def execute(self):
         frame = self.fetch_frame_from_live_stream()
