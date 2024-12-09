@@ -14,8 +14,8 @@ spec:
     spec:
       containers:
       - name: timelapse-web
-        image: fogcat5/frame-fetcher:latest
-        args: ["web_service.py"]
+        image: fogcat5/frame-fetcher:0.1.9
+        args: ["python3", "/app/web_service.py"]
         ports:
         - containerPort: 5000
         volumeMounts:
