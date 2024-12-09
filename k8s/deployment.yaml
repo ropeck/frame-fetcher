@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: timelapse-web
-        image: fogcat5/frame-fetcher:0.1.10
+        image: fogcat5/frame-fetcher:0.1.11
         args: ["gunicorn", "-b", "0.0.0.0:5000", "web_service:app"]
         ports:
         - containerPort: 5000

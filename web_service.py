@@ -47,6 +47,10 @@ def serve_timelapse(year, month, day):
         return jsonify({"error": "Timelapse not found"}), 404
     return send_file(video_path, mimetype="video/mp4")
 
+@app.route("/timelapse")
+def timelapse_ui():
+    return app.send_static_file("timelapse.html")
+
 @app.route("/gif/<int:year>/<int:month>/<int:day>.gif")
 def serve_gif(year, month, day):
     gif_path = get_gif_path(BASE_DIR, year, month, day)
