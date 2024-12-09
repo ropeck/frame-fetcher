@@ -1,14 +1,18 @@
 import logging
 import os
 import subprocess
-import sys
 from datetime import datetime
+from prometheus_client import Counter, Summary
 from yt_dlp import YoutubeDL
 from PIL import Image
 
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     handlers=[logging.StreamHandler()])
+
+# metrics
+frames_processed = Counter("frames_processed_total", "Total number of frames processed")
+timelapse_duration = Summary("timelapse_processing_time_seconds", "time taken to generate timelapse")
 
 class TimelapseRecorder:
     def __init__(self, output_dir=None, youtube_url=None):
@@ -88,6 +92,7 @@ class TimelapseRecorder:
         logging.info("Frame saved to %s", output_file)
         return output_file
 
+    @timelapse_duration.time()
     def create_day_timelapse(self):
         now = datetime.now()
         timelapse_path = os.path.join(self.output_dir(),
@@ -117,6 +122,7 @@ class TimelapseRecorder:
         self.generate_thumbnail(frame)
         self.create_day_timelapse()
         self.sync_cloud()
+        frames_processed.inc()
 
 
 if __name__ == "__main__":

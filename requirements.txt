@@ -1,4 +1,5 @@
 opencv-python
 Pillow
+prometheus_client
 pytube
 yt-dlp
